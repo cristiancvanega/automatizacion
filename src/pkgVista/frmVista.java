@@ -36,7 +36,7 @@ public class frmVista extends javax.swing.JFrame {
         int nivelInicial = 50;
         int temperaturaInicial = 50;
         int caudalQ1 = 10;        
-        double diamIniAgujeroQ2 = 0.1;//en metros
+        double diamIniAgujeroQ2 = 0.05;//en metros
         objElementos = new jplElementos(nivelInicial, temperaturaInicial, caudalQ1, diamIniAgujeroQ2, candela);
         
         //llave Q1        
@@ -79,7 +79,7 @@ public class frmVista extends javax.swing.JFrame {
         });
         Q2Cerrado.setBounds(330, 350, 80, 30);
         Q2Cerrado.setText("Cerrado");
-        Q2Cerrado.setBackground(Color.white);
+        Q2Cerrado.setBackground(Color.red);
         
         //llama        
         llama.setBounds(130, 320, 64, 38);

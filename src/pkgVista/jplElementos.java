@@ -300,7 +300,8 @@ public class jplElementos extends javax.swing.JPanel {
         //nivelReal es en metros
         double nivelReal = (((double)alto/100)*nivel)/100;//ALTO SE DIVIDE PARA OBTENER VALOR REAL EN METROS   
         
-        this.volumenTanque = PI*((DIAMETROTANQUE*DIAMETROTANQUE)/4)*(nivelReal-getDiametroAgujeroQ2()) ;
+        this.volumenTanque = PI*((DIAMETROTANQUE*DIAMETROTANQUE)/4)*(nivelReal-(getDiametroAgujeroQ2()/100)) ;//se divide agujero 100 para obtener valor en metros del agujero
+        System.out.println(getDiametroAgujeroQ2());
         
     }
 
@@ -315,7 +316,7 @@ public class jplElementos extends javax.swing.JPanel {
      * @param diametroAgujero the diametroAgujero to set
      */
     public void setDiametroAgujeroQ2(double diametroAgujeroQ2) {
-        this.diametroAgujeroQ2 = (alto2*(diametroAgujeroQ2*1))*10;
+        this.diametroAgujeroQ2 = (alto2*diametroAgujeroQ2)*10;
         
     }
 }
