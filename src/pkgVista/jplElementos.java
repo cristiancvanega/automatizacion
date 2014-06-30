@@ -24,9 +24,14 @@ public class jplElementos extends javax.swing.JPanel {
     private double nivel;
     private double caudalQ1;
     private double caudalQ2;
-    private double presionEnQ1;
-    private double presionEnQ2;
+    private double presionEnQ1;    
     private double llama;
+    private double volumenTanque;
+    private double diametroAgujeroQ2;//en metros
+    //CONSTANTES
+    private double PI = 3.141592654;
+    private double DIAMETROTANQUE = 1.20 ;
+    
     //nivel
     int x2 = x1+ancho1+20, y2 = 90;
     //caudal    Q1
@@ -49,26 +54,17 @@ public class jplElementos extends javax.swing.JPanel {
     /**
      * Creates new form jplElementos
      */
-    public jplElementos(double nivel, double temperatura, double caudalQ1, double caudalQ2, double llama) {
+    public jplElementos(double nivel, double temperatura, double caudalQ1, double diametroAgujeroQ2, double llama) {
         initComponents();
-        setBounds(100, 100, 600, 900); 
-        
-//        this.nivelEntanque = alto*(nivel/100);        
-//        this.temperatura = (alto1*(temperatura/100));
-//        this.nivel = (alto1*(nivel/100));   
-//        this.caudalQ1 = (alto1*(caudalQ1/100)); 
-//        this.caudalQ2 = (alto1*(caudalQ2/100)); 
-//        this.presionEnQ1 = (alto2*(caudalQ1/100));
-//        this.presionEnQ2 = (alto2*(caudalQ2/100));
-//        this.llama = (alto4*(llama/100));        
-        setNivelEntanque(nivel);
-        setTemperatura(temperatura);
-        setNivel(nivel);
-        setCaudalQ1(caudalQ1);
-        setCaudalQ2(caudalQ2);
-        setPresionEnQ1(caudalQ1);
-        setPresionEnQ2(caudalQ2);
+        setBounds(100, 100, 600, 900);         
+       
+        nivel(nivel);   
+        caudalEntrante(caudalQ1);        
+        caudalSaliente(diametroAgujeroQ2);
+        setTemperatura(temperatura);      
         setLlama(llama);
+        
+        
         
         
     }
@@ -116,7 +112,7 @@ public class jplElementos extends javax.swing.JPanel {
         g2.drawString("Q2", x6+2, y6-2);
         g2.drawRect(x6, y6, ancho3, alto2);
         g2.setColor(Color.blue);
-        g2.fillRect(x6, y6+alto2-(int)getPresionEnQ2(), ancho3, (int)getPresionEnQ2());
+        g2.fillRect(x6, y6+alto2-(int)getDiametroAgujeroQ2(), ancho3, (int)getDiametroAgujeroQ2());
         //sensor Nivel :)
         g2.setColor(Color.black);
         g2.fillRect(x+ancho, y+(alto/3), 20, 60);
@@ -135,6 +131,29 @@ public class jplElementos extends javax.swing.JPanel {
         
         
     }
+    
+    public void nivel(double nivel){
+        setNivelEntanque(nivel);
+        setNivel(nivel);
+        setVolumenTanque(nivel);
+       
+        
+    }
+    
+    public void caudalEntrante(double caudalQ1 ){
+        setCaudalQ1(caudalQ1);
+        setPresionEnQ1(caudalQ1);
+    }
+    
+    public void caudalSaliente(double diametroAgujeroQ2){
+        setCaudalQ2(diametroAgujeroQ2);        
+        setDiametroAgujeroQ2(diametroAgujeroQ2);
+        
+    }
+    
+    
+    
+    
     
     
 
@@ -217,7 +236,7 @@ public class jplElementos extends javax.swing.JPanel {
      * @param caudalQ1 the caudalQ1 to set
      */
     public void setCaudalQ1(double caudalQ1) {
-       this.caudalQ1 = (alto1*(caudalQ1/100));
+       this.caudalQ1 = (alto1*(caudalQ1/100))*10;
     }
 
     /**
@@ -231,7 +250,7 @@ public class jplElementos extends javax.swing.JPanel {
      * @param caudalQ2 the caudalQ2 to set
      */
     public void setCaudalQ2(double caudalQ2) {
-        this.caudalQ2 = (alto1*(caudalQ2/100));
+        this.caudalQ2 = (alto1*(caudalQ2*10));
     }
 
     /**
@@ -245,22 +264,11 @@ public class jplElementos extends javax.swing.JPanel {
      * @param presionEnQ1 the presionEnQ1 to set
      */
     public void setPresionEnQ1(double caudalQ1) {
-        this.presionEnQ1 = (alto2*(caudalQ1/100));
+        //this.presionEnQ1 = (alto2*(caudalQ1/100));
+        this.presionEnQ1 = caudalQ1;
     }
 
-    /**
-     * @return the presionEnQ2
-     */
-    public double getPresionEnQ2() {
-        return presionEnQ2;
-    }
-
-    /**
-     * @param presionEnQ2 the presionEnQ2 to set
-     */
-    public void setPresionEnQ2(double caudalQ2) {
-        this.presionEnQ2 = (alto2*(caudalQ2/100));
-    }
+    
 
     /**
      * @return the llama
@@ -274,5 +282,40 @@ public class jplElementos extends javax.swing.JPanel {
      */
     public void setLlama(double llama) {
         this.llama = (alto4*(llama/100));
+    }
+
+    /**
+     * @return the volumenTanque
+     */
+    public double getVolumenTanque() {
+        return volumenTanque;
+    }
+
+    /**
+     * @param volumenTanque the volumenTanque to set
+     */
+    public void setVolumenTanque(double nivel) {
+        System.out.println(nivel);
+        //nivel, viene en pocentaje
+        //nivelReal es en metros
+        double nivelReal = (((double)alto/100)*nivel)/100;//ALTO SE DIVIDE PARA OBTENER VALOR REAL EN METROS   
+        
+        this.volumenTanque = PI*((DIAMETROTANQUE*DIAMETROTANQUE)/4)*(nivelReal-getDiametroAgujeroQ2()) ;
+        
+    }
+
+    /**
+     * @return the diametroAgujero
+     */
+    public double getDiametroAgujeroQ2() {
+        return diametroAgujeroQ2;
+    }
+
+    /**
+     * @param diametroAgujero the diametroAgujero to set
+     */
+    public void setDiametroAgujeroQ2(double diametroAgujeroQ2) {
+        this.diametroAgujeroQ2 = (alto2*(diametroAgujeroQ2*1))*10;
+        
     }
 }

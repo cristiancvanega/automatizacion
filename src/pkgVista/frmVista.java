@@ -6,6 +6,7 @@
 
 package pkgVista;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JButton;
@@ -34,15 +35,20 @@ public class frmVista extends javax.swing.JFrame {
         int candela = 50;
         int nivelInicial = 50;
         int temperaturaInicial = 50;
-        int caudalQ1 = 10;
-        int caudalQ2 = 50;
-        objElementos = new jplElementos(nivelInicial, temperaturaInicial, caudalQ1, caudalQ2, candela);
+        int caudalQ1 = 10;        
+        double diamIniAgujeroQ2 = 0.1;//en metros
+        objElementos = new jplElementos(nivelInicial, temperaturaInicial, caudalQ1, diamIniAgujeroQ2, candela);
         
         //llave Q1        
         llaveQ1.setBounds(64, 38, 50, 50);
         llaveQ1.setMaximum(0);
         llaveQ1.setMaximum(10);
         llaveQ1.setValue(10);
+        llaveQ1.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                llaveQ1StateChanged(evt);
+            }
+        });
         
         //Botones Q2   
         Q2Abierto.addActionListener(new java.awt.event.ActionListener()
@@ -52,7 +58,8 @@ public class frmVista extends javax.swing.JFrame {
                 }
         });    
         Q2Abierto.setBounds(330, 270, 80, 30);
-        Q2Abierto.setText("Abierto");        
+        Q2Abierto.setText("Abierto");   
+        Q2Abierto.setBackground(Color.white);
        
         Q2Medio.addActionListener(new java.awt.event.ActionListener()
         {   @Override
@@ -61,7 +68,8 @@ public class frmVista extends javax.swing.JFrame {
                 }
         });
         Q2Medio.setBounds(330, 310, 80, 30);
-        Q2Medio.setText("Medio");        
+        Q2Medio.setText("Medio");  
+        Q2Medio.setBackground(Color.white);
         
         Q2Cerrado.addActionListener(new java.awt.event.ActionListener()
         {   @Override
@@ -71,6 +79,7 @@ public class frmVista extends javax.swing.JFrame {
         });
         Q2Cerrado.setBounds(330, 350, 80, 30);
         Q2Cerrado.setText("Cerrado");
+        Q2Cerrado.setBackground(Color.white);
         
         //llama        
         llama.setBounds(130, 320, 64, 38);
@@ -127,22 +136,45 @@ public class frmVista extends javax.swing.JFrame {
    
     private void Q2AbiertoActionPerformed(java.awt.event.ActionEvent evt) {                                         
         // TODO add your handling code here:
+        Q2Abierto.setBackground(Color.green);
+        Q2Medio.setBackground(Color.white);
+        Q2Cerrado.setBackground(Color.white);
+        objElementos.caudalSaliente(0.1);
+        objElementos.repaint();
+        
         
     } 
     private void Q2MedioActionPerformed(java.awt.event.ActionEvent evt) {                                         
         // TODO add your handling code here:
+        Q2Medio.setBackground(Color.yellow);
+        Q2Abierto.setBackground(Color.white);
+        Q2Cerrado.setBackground(Color.white);
+        objElementos.caudalSaliente(0.05);
+        objElementos.repaint();
       
     }
     private void Q2CerradoActionPerformed(java.awt.event.ActionEvent evt) {                                         
         // TODO add your handling code here:
+        Q2Cerrado.setBackground(Color.red);
+        Q2Abierto.setBackground(Color.white);
+        Q2Medio.setBackground(Color.white);
+        objElementos.caudalSaliente(0.00);
+        objElementos.repaint();
         
     }
     private void llamaStateChanged(javax.swing.event.ChangeEvent evt) {                                      
         // TODO add your handling code here:
         objElementos.setLlama(llama.getValue());
         objElementos.repaint();
+        System.out.println(llama.getValue());
         
     } 
+    private void llaveQ1StateChanged(javax.swing.event.ChangeEvent evt) {                                      
+        // TODO add your handling code here:
+        objElementos.caudalEntrante(llaveQ1.getValue());
+        objElementos.repaint();
+               
+    }
     
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
