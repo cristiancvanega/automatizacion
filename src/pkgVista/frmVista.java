@@ -6,9 +6,17 @@
 
 package pkgVista;
 
+
 import java.awt.Color;
+import java.awt.Event;
+import java.awt.Robot;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
+import static java.lang.Thread.sleep;
+import java.util.concurrent.DelayQueue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.swing.JSlider;
 
@@ -26,6 +34,15 @@ public class frmVista extends javax.swing.JFrame {
      JButton Q2Cerrado = new JButton();
      //llama
      JSlider llama = new JSlider();
+     boolean stop;
+     double VOLMAX = 1.52681402; 
+     double VOLMIN = 1.01787601; 
+     
+     //botones mando
+     JButton start = new JButton();
+     JButton btnStop = new JButton();
+     JButton btnReinicar = new JButton();
+     
     /**
      * Creates new form frmVista
      */
@@ -35,9 +52,9 @@ public class frmVista extends javax.swing.JFrame {
         int candela = 50;
         int nivelInicial = 50;
         int temperaturaInicial = 50;
-        int caudalQ1 = 10;        
-        double diamIniAgujeroQ2 = 0.05;//en metros
-        objElementos = new jplElementos(nivelInicial, temperaturaInicial, caudalQ1, diamIniAgujeroQ2, candela);
+        double diamIniAgujeroQ1 = 0.1;        
+        double diamIniAgujeroQ2 = 0.00;//en metros
+        objElementos = new jplElementos(nivelInicial, temperaturaInicial, diamIniAgujeroQ1, diamIniAgujeroQ2, candela);
         
         //llave Q1        
         llaveQ1.setBounds(64, 38, 50, 50);
@@ -100,7 +117,41 @@ public class frmVista extends javax.swing.JFrame {
         objElementos.add(llama);
         
         this.add(objElementos);
+        stop = Boolean.FALSE;  
         
+        //botones mando
+        start.setBounds(450, 280, 80, 30);
+        start.setText("Iniciar");
+        start.addActionListener(new java.awt.event.ActionListener()
+        {   @Override
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    IniciarActionPerformed(evt);
+                }
+        });
+        objElementos.add(start);
+        
+        //stop
+        btnStop.setBounds(450, 310, 80, 30);
+        btnStop.setText("Stop");
+        btnStop.addActionListener(new java.awt.event.ActionListener()
+        {   @Override
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    btnStopActionPerformed(evt);
+                }
+        });
+        objElementos.add(btnStop);
+        
+        //reniniciar
+         //stop
+         btnReinicar.setBounds(450, 340, 80, 30);
+         btnReinicar.setText("Reiniciar");
+         btnReinicar.addActionListener(new java.awt.event.ActionListener()
+        {   @Override
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                     btnReinicarActionPerformed(evt);
+                }
+        });
+        objElementos.add(btnReinicar);
         
         
     }
@@ -139,8 +190,11 @@ public class frmVista extends javax.swing.JFrame {
         Q2Abierto.setBackground(Color.green);
         Q2Medio.setBackground(Color.white);
         Q2Cerrado.setBackground(Color.white);
-        objElementos.caudalSaliente(0.1);
-        objElementos.repaint();
+        objElementos.setDiametroAgujeroQ2(0.1);
+        objElementos.pullVolumenTanque(objElementos.CaudalSaliente());
+        objElementos.repaint();  
+        
+        
         
         
     } 
@@ -149,8 +203,10 @@ public class frmVista extends javax.swing.JFrame {
         Q2Medio.setBackground(Color.yellow);
         Q2Abierto.setBackground(Color.white);
         Q2Cerrado.setBackground(Color.white);
-        objElementos.caudalSaliente(0.05);
+        objElementos.setDiametroAgujeroQ2(0.05);
+        objElementos.pullVolumenTanque(objElementos.CaudalSaliente());
         objElementos.repaint();
+        
       
     }
     private void Q2CerradoActionPerformed(java.awt.event.ActionEvent evt) {                                         
@@ -158,7 +214,7 @@ public class frmVista extends javax.swing.JFrame {
         Q2Cerrado.setBackground(Color.red);
         Q2Abierto.setBackground(Color.white);
         Q2Medio.setBackground(Color.white);
-        objElementos.caudalSaliente(0.00);
+        objElementos.setDiametroAgujeroQ2(0.00);
         objElementos.repaint();
         
     }
@@ -171,9 +227,107 @@ public class frmVista extends javax.swing.JFrame {
     } 
     private void llaveQ1StateChanged(javax.swing.event.ChangeEvent evt) {                                      
         // TODO add your handling code here:
-        objElementos.caudalEntrante(llaveQ1.getValue());
+        objElementos.setDiametroAgujeroQ1((double)llaveQ1.getValue()/100);
         objElementos.repaint();
                
+    }
+    
+     private void IniciarActionPerformed(java.awt.event.ActionEvent evt) {                                         
+       
+         
+         Thread hilo = new Thread(){
+             public void run(){
+        
+        while(!stop){
+           
+            try {
+                sleep(1000);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(frmVista.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            if(objElementos.getVolumenTanque()>= VOLMAX){
+                //CERRAR VALVULa Q1
+                CerrarQ1(0);
+                //abrir valvula Q2
+                Q2Abierto.doClick();
+               
+            }else{
+                
+                if(objElementos.getVolumenTanque()>= VOLMIN){
+                    //cerrar valvula q2
+                    Q2Cerrado.doClick();
+                    //abrir valvula q1
+                    AbrirQ1(5);
+                
+                }else{
+                    //cerrar valvula q2
+                    Q2Cerrado.doClick();
+                    //abrir valvula q1
+                    AbrirQ1(10);
+                }                
+                
+            }
+            
+            
+        
+        }
+           
+            
+    
+            
+    }
+        };
+        hilo.start();
+         
+             
+        
+         
+            
+//            try {
+//                Thread.sleep(1000);
+//            } catch (InterruptedException ex) {
+//                Logger.getLogger(frmVista.class.getName()).log(Level.SEVERE, null, ex);
+//            }
+            
+            
+        
+             
+        
+        
+        
+           
+        
+        
+    }
+     
+     private void btnStopActionPerformed(java.awt.event.ActionEvent evt) {                                         
+        // TODO add your handling code here:
+        this.stop = Boolean.TRUE;
+    }
+    
+      private void btnReinicarActionPerformed(java.awt.event.ActionEvent evt) {                                         
+        // TODO add your handling code here:
+        this.stop = Boolean.FALSE;
+        objElementos.nivel(50); 
+        objElementos.setDiametroAgujeroQ1(0.1);
+        objElementos.setDiametroAgujeroQ2(0.00);
+        objElementos.repaint();
+        
+    }
+   
+    
+    public void CerrarQ1(int value){
+        llaveQ1.setValue(value);
+        objElementos.setDiametroAgujeroQ1((double)llaveQ1.getValue()/100);
+        objElementos.repaint();
+        
+    }
+    
+    public void AbrirQ1(int value){
+        llaveQ1.setValue(value);
+        objElementos.setDiametroAgujeroQ1((double)llaveQ1.getValue()/100);
+        objElementos.pushVolumenTanque(objElementos.CaudalEntrante());
+        objElementos.repaint();
     }
     
     public static void main(String args[]) {
@@ -203,7 +357,7 @@ public class frmVista extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new frmVista().setVisible(true);
+                 new frmVista().setVisible(true);
             }
         });
     }

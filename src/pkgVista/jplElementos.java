@@ -23,14 +23,18 @@ public class jplElementos extends javax.swing.JPanel {
     private double temperatura;
     private double nivel;
     private double caudalQ1;
-    private double caudalQ2;
-    private double presionEnQ1;    
-    private double llama;
-    private double volumenTanque;
-    private double diametroAgujeroQ2;//en metros
+    private double caudalQ2;      
+    private double llama; 
+    private double diametroAgujeroQ1;//en metros 
+    private double diametroAgujeroQ2;//en metros    
+    private double nivelReal;//en metros
+    private double valvulaQ1;//porcentaje
+    private double valvulaQ2;//pocentaje    
     //CONSTANTES
     private double PI = 3.141592654;
     private double DIAMETROTANQUE = 1.20 ;
+    private double GRAVEDAD = 9.81;//METROS SOBRE SEGUNDOS CUADRADO
+    private double VELOCIDADENTRANTEQ1 = 5.7752922;
     
     //nivel
     int x2 = x1+ancho1+20, y2 = 90;
@@ -54,17 +58,15 @@ public class jplElementos extends javax.swing.JPanel {
     /**
      * Creates new form jplElementos
      */
-    public jplElementos(double nivel, double temperatura, double caudalQ1, double diametroAgujeroQ2, double llama) {
+    public jplElementos(double nivel, double temperatura, double diametroAgujeroQ1, double diametroAgujeroQ2, double llama) {
         initComponents();
         setBounds(100, 100, 600, 900);         
        
+        setDiametroAgujeroQ2(diametroAgujeroQ2);      
         nivel(nivel);   
-        caudalEntrante(caudalQ1);        
-        caudalSaliente(diametroAgujeroQ2);
+        setDiametroAgujeroQ1(diametroAgujeroQ1);        
         setTemperatura(temperatura);      
-        setLlama(llama);
-        
-        
+        setLlama(llama);        
         
         
     }
@@ -88,14 +90,14 @@ public class jplElementos extends javax.swing.JPanel {
         g2.drawRect(x2, y2, ancho1, alto1);
         g2.setColor(Color.red);
         g2.fillRect(x2, y2+alto1-(int)getNivel(), ancho1, (int)getNivel());
-        //Caudal Q1        
+        //Caudal Q1 tablero       
         g2.setColor(Color.black);
         g2.drawString("Caudal", x3+((x4-x3)/2)-5, y3-13);
         g2.drawString("Q1", x3+4, y3-2);
         g2.drawRect(x3, y3, ancho1, alto1);
         g2.setColor(Color.red);
         g2.fillRect(x3, y3+alto1-(int)getCaudalQ1(), ancho1, (int)getCaudalQ1());
-        //Caudal Q2
+        //Caudal Q2 tablero
         g2.setColor(Color.black);
         g2.drawString("Q2", x4+4, y4-2);
         g2.drawRect(x4, y4, ancho1, alto1);
@@ -106,13 +108,13 @@ public class jplElementos extends javax.swing.JPanel {
         g2.drawString("Q1", x5+ancho2-10, y5-2);
         g2.drawRect(x5, y5, ancho2, alto2);
         g2.setColor(Color.blue);
-        g2.fillRect(x5, y5+alto2-(int)getPresionEnQ1(), ancho2, (int)getPresionEnQ1());
+        g2.fillRect(x5, y5+alto2-(int)getValvulaQ1(), ancho2, (int)getValvulaQ1());
         //Valvula  Q2
         g2.setColor(Color.black);
         g2.drawString("Q2", x6+2, y6-2);
         g2.drawRect(x6, y6, ancho3, alto2);
         g2.setColor(Color.blue);
-        g2.fillRect(x6, y6+alto2-(int)getDiametroAgujeroQ2(), ancho3, (int)getDiametroAgujeroQ2());
+        g2.fillRect(x6, y6+alto2-(int)getValvulaQ2(), ancho3, (int)getValvulaQ2());
         //sensor Nivel :)
         g2.setColor(Color.black);
         g2.fillRect(x+ancho, y+(alto/3), 20, 60);
@@ -130,32 +132,7 @@ public class jplElementos extends javax.swing.JPanel {
         
         
         
-    }
-    
-    public void nivel(double nivel){
-        setNivelEntanque(nivel);
-        setNivel(nivel);
-        setVolumenTanque(nivel);
-       
-        
-    }
-    
-    public void caudalEntrante(double caudalQ1 ){
-        setCaudalQ1(caudalQ1);
-        setPresionEnQ1(caudalQ1);
-    }
-    
-    public void caudalSaliente(double diametroAgujeroQ2){
-        setCaudalQ2(diametroAgujeroQ2);        
-        setDiametroAgujeroQ2(diametroAgujeroQ2);
-        
-    }
-    
-    
-    
-    
-    
-    
+    }    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -236,7 +213,7 @@ public class jplElementos extends javax.swing.JPanel {
      * @param caudalQ1 the caudalQ1 to set
      */
     public void setCaudalQ1(double caudalQ1) {
-       this.caudalQ1 = (alto1*(caudalQ1/100))*10;
+       this.caudalQ1 = (alto1*(caudalQ1))*10;
     }
 
     /**
@@ -253,20 +230,7 @@ public class jplElementos extends javax.swing.JPanel {
         this.caudalQ2 = (alto1*(caudalQ2*10));
     }
 
-    /**
-     * @return the presionEnQ1
-     */
-    public double getPresionEnQ1() {
-        return presionEnQ1;
-    }
-
-    /**
-     * @param presionEnQ1 the presionEnQ1 to set
-     */
-    public void setPresionEnQ1(double caudalQ1) {
-        //this.presionEnQ1 = (alto2*(caudalQ1/100));
-        this.presionEnQ1 = caudalQ1;
-    }
+   
 
     
 
@@ -284,26 +248,8 @@ public class jplElementos extends javax.swing.JPanel {
         this.llama = (alto4*(llama/100));
     }
 
-    /**
-     * @return the volumenTanque
-     */
-    public double getVolumenTanque() {
-        return volumenTanque;
-    }
-
-    /**
-     * @param volumenTanque the volumenTanque to set
-     */
-    public void setVolumenTanque(double nivel) {
-        System.out.println(nivel);
-        //nivel, viene en pocentaje
-        //nivelReal es en metros
-        double nivelReal = (((double)alto/100)*nivel)/100;//ALTO SE DIVIDE PARA OBTENER VALOR REAL EN METROS   
-        
-        this.volumenTanque = PI*((DIAMETROTANQUE*DIAMETROTANQUE)/4)*(nivelReal-(getDiametroAgujeroQ2()/100)) ;//se divide agujero 100 para obtener valor en metros del agujero
-        System.out.println(getDiametroAgujeroQ2());
-        
-    }
+    
+   
 
     /**
      * @return the diametroAgujero
@@ -315,8 +261,148 @@ public class jplElementos extends javax.swing.JPanel {
     /**
      * @param diametroAgujero the diametroAgujero to set
      */
-    public void setDiametroAgujeroQ2(double diametroAgujeroQ2) {
-        this.diametroAgujeroQ2 = (alto2*diametroAgujeroQ2)*10;
+    public void setDiametroAgujeroQ2(double diametroAgujeroQ2) {  
+        this.diametroAgujeroQ2 = diametroAgujeroQ2;//en metros
+       // System.out.println("Diametro "+this.diametroAgujeroQ2);
+        this.setValvulaQ2(diametroAgujeroQ2);
+        this.setCaudalQ2(diametroAgujeroQ2);
+        
+        
         
     }
+
+    /**
+     * @return the nivelReal
+     */
+    public double getNivelReal() {
+        return nivelReal;
+    }
+
+    /**
+     * @param nivelReal the nivelReal to set
+     */
+    public void setNivelReal(double nivel) {
+        //nivel viene en porcentaje
+        this.nivelReal = (((double)alto/100)*nivel)/100;//ALTO SE DIVIDE PARA OBTENER VALOR REAL EN METROS 
+         
+    }
+
+    /**
+     * @return the valvulaQ2
+     */
+    public double getValvulaQ2() {
+        return valvulaQ2;
+    }
+
+    /**
+     * @param valvulaQ2 the valvulaQ2 to set
+     */
+    public void setValvulaQ2(double diametroAgujeroQ2) {    
+        //diametrosAgujero llega en metros
+        this.valvulaQ2 = ((double)alto2*diametroAgujeroQ2)*10;//en porcetaje
+        //valvulaQ2, se utiliza para pintar tubo Q2
+        //System.out.println("valvulaq2 "+getValvulaQ2() );
+    }
+    
+    /**
+     * @return the valvulaQ1
+     */
+    public double getValvulaQ1() {
+        return valvulaQ1;
+    }
+
+    /**
+     * @param valvulaQ1 the valvulaQ1 to set
+     */
+    public void setValvulaQ1(double diametroAgujeroQ1) {        
+        //diametrosAgujero llega en metros
+        this.valvulaQ1 = ((double)alto2*diametroAgujeroQ1)*10;//en porcetaje
+        //valvulaQ2, se utiliza para pintar tubo Q2
+        //System.out.println("valvulaq1 "+getValvulaQ1() );
+    }
+
+    /**
+     * @return the diametroAgujeroQ1
+     */
+    public double getDiametroAgujeroQ1() {
+        return diametroAgujeroQ1;
+        
+    }
+
+    /**
+     * @param diametroAgujeroQ1 the diametroAgujeroQ1 to set
+     */
+    public void setDiametroAgujeroQ1(double diametroAgujeroQ1) {
+        this.diametroAgujeroQ1 = diametroAgujeroQ1;//en metros  
+        //System.out.println("DiametroQ1 "+getDiametroAgujeroQ1());
+        this.setValvulaQ1(diametroAgujeroQ1);
+        this.setCaudalQ1(diametroAgujeroQ1);
+        
+    }
+    
+    public void nivel(double nivel){
+        //nivel llega en pocentaje
+        setNivelEntanque(nivel);
+        setNivel(nivel);//nivel tablero
+        setNivelReal(nivel);//calculo formulas   
+        
+    }
+    
+    
+   
+    
+    public double VelocidadSalidaQ2() {            
+        double velocidadSalidaQ2 = Math.sqrt(2*GRAVEDAD*(getNivelReal()-getDiametroAgujeroQ2()));        
+        return  velocidadSalidaQ2;      
+    }
+    
+    public double CaudalSaliente(){              
+        double caudalSaliente = PI*((getDiametroAgujeroQ2()*getDiametroAgujeroQ2())/4)*(VelocidadSalidaQ2()) ;//METROS CUBICOS POR SEGUNDO
+        return caudalSaliente;
+    }
+    
+    public double CaudalEntrante( ){   
+        System.out.println("DiamAGUQ1 "+getDiametroAgujeroQ1());
+        double caudalEntrante = PI*((getDiametroAgujeroQ1()*getDiametroAgujeroQ1())/4)*(this.VELOCIDADENTRANTEQ1) ;//METROS CUBICOS POR SEGUNDO
+        System.out.println("En caudal "+caudalEntrante);
+        return caudalEntrante;
+    }
+    
+    public void AgregarCaudal(double caudalEntrante){
+        
+    }
+
+    /**
+     * @return the volumenTanque
+     */
+    public double getVolumenTanque() {
+        double volumenTanque = PI*((DIAMETROTANQUE*DIAMETROTANQUE)/4)*(getNivelReal()) ;//se divide agujero 100 para obtener valor en metros del agujero
+        return volumenTanque;
+    }
+
+    /**
+     * @param volumenTanque the volumenTanque to set
+     */
+    public void pushVolumenTanque(double caudalEntrante) {
+        //volumenTanque, es igual a lo que tenia más caudal entrante, que afectara en nivel del tanque.
+        this.nivelReal = (getVolumenTanque()+caudalEntrante)/(PI*((DIAMETROTANQUE*DIAMETROTANQUE)/4));//VALOR REAL EN METROS
+        ActualizarNivel();
+       
+    }
+    
+    public void pullVolumenTanque(double caudalSaliente) {
+        //volumenTanque, es igual a lo que tenia más caudal entrante, que afectara en nivel del tanque.
+        this.nivelReal = (getVolumenTanque()-caudalSaliente)/(PI*((DIAMETROTANQUE*DIAMETROTANQUE)/4));//VALOR REAL EN METROS 
+        ActualizarNivel();
+    }
+    
+    public void ActualizarNivel(){
+        double nivelPorcentaje = ((getNivelReal()*100)/alto)*100;
+        setNivel(nivelPorcentaje);
+        setNivelEntanque(nivelPorcentaje);
+    }
+
+    
+
+    
 }
